@@ -129,7 +129,7 @@ public class Footsteps : MonoBehaviour
 
     /// <summary>
     /// Ogólna metoda do odtwarzania dźwięku na podstawie tagu powierzchni.
-    /// ZASTĘPUJE SŁOWNIK instrukcją SWITCH.
+
     /// </summary>
     /// <param name="soundInstance">Instancja dźwięku FMOD.</param>
     /// <param name="eventRef">Referencja do zdarzenia FMOD.</param>
@@ -153,9 +153,6 @@ public class Footsteps : MonoBehaviour
                 surfaceParameter = "Wood";
                 break;
 
-            case "Bed":
-                surfaceParameter = "Bed";
-                break;
         }
 
         // Jeśli znaleziono pasujący parametr, odtwórz dźwięk.
