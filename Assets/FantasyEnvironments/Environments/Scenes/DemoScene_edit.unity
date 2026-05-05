@@ -1126,12 +1126,12 @@ GameObject:
   - component: {fileID: 240899209}
   - component: {fileID: 240899208}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: amb_forest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &240899208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1191,7 +1191,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 240899207}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1895,7 +1895,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &485849461
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2609,11 +2609,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 237163390}
-  walkSpeed: 3
-  runSpeed: 6
-  jumpPower: 6
-  gravity: 20
-  lookSpeed: 3
+  walkSpeed: 6
+  runSpeed: 12
+  jumpPower: 7
+  gravity: 10
+  lookSpeed: 2
   lookXLimit: 45
   canMove: 1
 --- !u!143 &613997990
@@ -2682,25 +2682,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   footstepsEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -1118567318
+      Data2: 1283564893
+      Data3: -1800571994
+      Data4: -1782496931
+    Path: event:/Footsteps
   jumpEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -1749234023
+      Data2: 1160349232
+      Data3: -1876364404
+      Data4: -551853818
+    Path: event:/Jump
   landEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -1532160642
+      Data2: 1135597426
+      Data3: 2141308816
+      Data4: 2047382753
+    Path: event:/Jump_Land
   isGrounded: 1
   isJumping: 0
 --- !u!1 &688602384
@@ -3234,7 +3234,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &882882083
 Transform:
   m_ObjectHideFlags: 0
@@ -4183,7 +4183,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1347371333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4191,7 +4191,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1347371332}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
   m_Name: 
