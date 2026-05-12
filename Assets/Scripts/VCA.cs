@@ -2,75 +2,58 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 
-/// <summary>
-/// Zarządza głośnością ścieżek audio poprzez FMOD VCAs.
-/// </summary>
-public class VCA : MonoBehaviour
+// Zarządza głośnością ścieżek audio przez FMOD VCAs.
+public class VCA_Manager : MonoBehaviour
 {
-    // FMOD - Referencje do VCAs.
     private FMOD.Studio.VCA globalVCA;
     private FMOD.Studio.VCA musicVCA;
     private FMOD.Studio.VCA tavernVCA;
     private FMOD.Studio.VCA outsideVCA;
 
-    // Flagi stanu wyciszenia.
-    [SerializeField]
-    private bool globalMuteActive = true;
-    [SerializeField]
-    private bool musicMuteActive = false;
-    [SerializeField]
-    private bool tavernMuteActive = false;
-    [SerializeField]
-    private bool outsideMuteActive = false;
+    [SerializeField] private bool globalMuteActive = true;
+    [SerializeField] private bool musicMuteActive = false;
+    [SerializeField] private bool tavernMuteActive = false;
+    [SerializeField] private bool outsideMuteActive = false;
 
     void Start()
     {
-        // Pobiera VCAs z FMOD.
-        globalVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Mute");
-        musicVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Music");
-        tavernVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Tavern_amb");
-        outsideVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Outside_amb");
+        // Pobierz VCAs. Ścieżki muszą zgadzać się z nazwami w FMOD.
+        globalVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Global mute");
+        musicVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Music mute");
+        tavernVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Tavern mute");
+        outsideVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Outside mute");
 
-        // Ustawia początkową głośność.
-        globalVCA.setVolume(DecibelToLinear(-100));
+        // Ustaw początkową głośność globalną.
+        globalVCA.setVolume(DecibelToLinear(globalMuteActive ? -100f : 0f));
     }
+
+    // --- METODY PUBLICZNE DLA PRZYCISKÓW UI ---
+
+    public void ToggleGlobalMuteUI() => ToggleMute(globalVCA, ref globalMuteActive);
+    public void ToggleMusicMuteUI() => ToggleMute(musicVCA, ref musicMuteActive);
+    public void ToggleTavernMuteUI() => ToggleMute(tavernVCA, ref tavernMuteActive);
+    public void ToggleOutsideMuteUI() => ToggleMute(outsideVCA, ref outsideMuteActive);
+
+    // ------------------------------------------
 
     void Update()
     {
-        // Sprawdza, czy klawisze zostały naciśnięte i wywołuje odpowiednią funkcję.
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            ToggleMute(globalVCA, ref globalMuteActive);
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            ToggleMute(musicVCA, ref musicMuteActive);
-        }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            ToggleMute(tavernVCA, ref tavernMuteActive);
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            ToggleMute(outsideVCA, ref outsideMuteActive);
-        }
+        // Klawisze zachowane do szybkiego testowania.
+        if (Input.GetKeyDown(KeyCode.U)) ToggleGlobalMuteUI();
+        if (Input.GetKeyDown(KeyCode.I)) ToggleMusicMuteUI();
+        if (Input.GetKeyDown(KeyCode.O)) ToggleTavernMuteUI();
+        if (Input.GetKeyDown(KeyCode.P)) ToggleOutsideMuteUI();
     }
 
-    /// <summary>
-    /// Przełącza głośność VCA na 0 dB (włączony) lub -100 dB (wyciszony).
-    /// </summary>
-    /// <param name="vca">VCA do przełączenia.</param>
-    /// <param name="muteFlag">Zmienna stanu, która jest przełączana.</param>
+    // Odwraca stan wyciszenia i ustawia głośność.
     private void ToggleMute(FMOD.Studio.VCA vca, ref bool muteFlag)
     {
-        muteFlag = !muteFlag; // Odwraca stan wyciszenia.
-        float volume = muteFlag ? DecibelToLinear(-100) : DecibelToLinear(0);
+        muteFlag = !muteFlag;
+        float volume = muteFlag ? DecibelToLinear(-100f) : DecibelToLinear(0f);
         vca.setVolume(volume);
     }
 
-    /// <summary>
-    /// Konwertuje decybele na wartość liniową.
-    /// </summary>
+    // Konwertuje dB na liniową skalę.
     private float DecibelToLinear(float dB)
     {
         return Mathf.Pow(10.0f, dB / 20f);
