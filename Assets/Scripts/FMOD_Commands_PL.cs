@@ -27,7 +27,7 @@
 //        FootstepsSound.stop(FMOD.Studio.STOP_MODE.IMMEDIATE); // Stopuje odtwarzanie eventu bez fadeoutu.
 //        FootstepsSound.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT); // Stopuje odtwarzanie eventu z fadeoutem.
 //        FootstepsSound.release(); // Zwolnia pamięć zajmowaną przez instancję eventu.
-        
+
 //        // zarządzanie eventem z przypięciami emittera do gameObjectu 
 //        FootstepsSound = RuntimeManager.CreateInstance(footstepsEvent);
 //        FootstepsSound.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject.transform)); // Przypięcia emitter eventu do obiektu GameObject.

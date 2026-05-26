@@ -1,5 +1,33 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8084693620980580231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Door
+  m_EditorClassIdentifier: 
+  Path: event:/Door
+  Guid:
+    Data1: -1676400491
+    Data2: 1342069885
+    Data3: -1218105674
+    Data4: -1062688862
+  Banks:
+  - {fileID: 3120229049674009041}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters:
+  - {fileID: -179431433508070428}
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &-7819417024694265617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15,10 +43,10 @@ MonoBehaviour:
   Path: ../../../Desktop/Audiooo/AUDIODZISdxd-20260428T145052Z-3-001/AUDIODZISdxd/fmod/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639142100926105251
+  lastModified: 639154202701100877
   FileSizes:
   - Name: 
-    Value: 1398
+    Value: 1680
   Exists: 1
 --- !u!114 &-7096070195906337688
 MonoBehaviour:
@@ -74,33 +102,6 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 0
---- !u!114 &-5503998026980091001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/amb_tavern
-  m_EditorClassIdentifier: 
-  Path: event:/amb_tavern
-  Guid:
-    Data1: -1048610773
-    Data2: 1227258207
-    Data3: 648144552
-    Data4: 98559751
-  Banks:
-  - {fileID: 3120229049674009041}
-  IsStream: 1
-  Is3D: 0
-  IsOneShot: 0
-  Parameters: []
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 53008
 --- !u!114 &-4337627265331579231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,6 +420,32 @@ MonoBehaviour:
   lastModified: 639129834981633665
   FileSizes: []
   Exists: 1
+--- !u!114 &-179431433508070428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Door/Doors
+  m_EditorClassIdentifier: 
+  Name: Doors
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 2086209302
+    data2: 2929903418
+  Type: 2
+  IsGlobal: 0
+  Labels:
+  - Open
+  - Close
+  Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,7 +464,6 @@ MonoBehaviour:
   EditorEvents:
   - {fileID: 5505173554689577086}
   - {fileID: 3128996907667978739}
-  - {fileID: -5503998026980091001}
   - {fileID: 7473712466385245376}
   - {fileID: 4768422174793982387}
   - {fileID: -2740528155183861796}
@@ -445,33 +471,34 @@ MonoBehaviour:
   - {fileID: -4232245455265493561}
   - {fileID: -1985551031706103212}
   - {fileID: -6529520767164063487}
+  - {fileID: -8084693620980580231}
   EditorParameters: []
   MasterBanks:
   - {fileID: 3120229049674009041}
   StringsBanks:
   - {fileID: -7819417024694265617}
   cacheVersion: 131859
-  cacheTime: 639142100926105251
+  cacheTime: 639154202701100877
   SerializableEventsDict:
   - key: event:/amb_Music
     index: 0
   - key: event:/amb_forest
     index: 1
-  - key: event:/amb_tavern
-    index: 2
   - key: event:/amb_fireplace
-    index: 3
+    index: 2
   - key: event:/Tavern_BeerSpill
-    index: 4
+    index: 3
   - key: event:/amb_tavern1
-    index: 5
+    index: 4
   - key: event:/Footsteps
-    index: 6
+    index: 5
   - key: event:/Jump_Land
-    index: 7
+    index: 6
   - key: event:/Jump
-    index: 8
+    index: 7
   - key: snapshot:/Outside
+    index: 8
+  - key: event:/Door
     index: 9
 --- !u!114 &1125114898953383259
 MonoBehaviour:
@@ -589,7 +616,7 @@ MonoBehaviour:
   Path: ../../../Desktop/Audiooo/AUDIODZISdxd-20260428T145052Z-3-001/AUDIODZISdxd/fmod/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639142100926090100
+  lastModified: 639154202701085582
   FileSizes: []
   Exists: 1
 --- !u!114 &3128996907667978739
@@ -643,8 +670,8 @@ MonoBehaviour:
   Is3D: 1
   IsOneShot: 1
   Parameters: []
-  MinDistance: 1
-  MaxDistance: 8
+  MinDistance: 3
+  MaxDistance: 20
   Length: 0
 --- !u!114 &5505173554689577086
 MonoBehaviour:

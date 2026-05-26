@@ -1,61 +1,85 @@
 using UnityEngine;
+using UnityEngine.UI;
 using FMODUnity;
-using FMOD.Studio;
 
-// Zarządza głośnością ścieżek audio przez FMOD VCAs.
+// Zarządza głośnością VCA i kursorem dla menu.
 public class VCA_Manager : MonoBehaviour
 {
     private FMOD.Studio.VCA globalVCA;
     private FMOD.Studio.VCA musicVCA;
     private FMOD.Studio.VCA tavernVCA;
     private FMOD.Studio.VCA outsideVCA;
+    private FMOD.Studio.VCA sfxVCA;
 
-    [SerializeField] private bool globalMuteActive = true;
-    [SerializeField] private bool musicMuteActive = false;
-    [SerializeField] private bool tavernMuteActive = false;
-    [SerializeField] private bool outsideMuteActive = false;
+    [Header("Referencje do UI")]
+    public Slider globalSlider;
+    public Slider musicSlider;
+    public Slider tavernSlider;
+    public Slider outsideSlider;
+    public Slider sfxSlider;
+
+    // Przechowuje stan menu (włączone/wyłączone).
+    private bool isMenuOpen = false;
 
     void Start()
     {
-        // Pobierz VCAs. Ścieżki muszą zgadzać się z nazwami w FMOD.
-        globalVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Global mute");
-        musicVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Music mute");
-        tavernVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Tavern mute");
-        outsideVCA = FMODUnity.RuntimeManager.GetVCA("vca:/Outside mute");
+        // Pobierz VCAs.
+        globalVCA = RuntimeManager.GetVCA("vca:/Global mute");
+        musicVCA = RuntimeManager.GetVCA("vca:/Music mute");
+        tavernVCA = RuntimeManager.GetVCA("vca:/Tavern mute");
+        outsideVCA = RuntimeManager.GetVCA("vca:/Outside mute");
+        sfxVCA = RuntimeManager.GetVCA("vca:/SFX");
 
-        // Ustaw początkową głośność globalną.
-        globalVCA.setVolume(DecibelToLinear(globalMuteActive ? -100f : 0f));
+        // Ustaw domyślne wartości w UI.
+        if (globalSlider != null) globalSlider.value = 1f;
+        if (musicSlider != null) musicSlider.value = 1f;
+        if (tavernSlider != null) tavernSlider.value = 1f;
+        if (outsideSlider != null) outsideSlider.value = 1f;
+        if (sfxSlider != null) sfxSlider.value = 1f;
+
+        // Wymuś 100% głośności w FMOD na starcie (naprawia problem z zapisanym wyciszeniem).
+        globalVCA.setVolume(1f);
+        musicVCA.setVolume(1f);
+        tavernVCA.setVolume(1f);
+        outsideVCA.setVolume(1f);
+        sfxVCA.setVolume(1f);
     }
-
-    // --- METODY PUBLICZNE DLA PRZYCISKÓW UI ---
-
-    public void ToggleGlobalMuteUI() => ToggleMute(globalVCA, ref globalMuteActive);
-    public void ToggleMusicMuteUI() => ToggleMute(musicVCA, ref musicMuteActive);
-    public void ToggleTavernMuteUI() => ToggleMute(tavernVCA, ref tavernMuteActive);
-    public void ToggleOutsideMuteUI() => ToggleMute(outsideVCA, ref outsideMuteActive);
-
-    // ------------------------------------------
 
     void Update()
     {
-        // Klawisze zachowane do szybkiego testowania.
-        if (Input.GetKeyDown(KeyCode.U)) ToggleGlobalMuteUI();
-        if (Input.GetKeyDown(KeyCode.I)) ToggleMusicMuteUI();
-        if (Input.GetKeyDown(KeyCode.O)) ToggleTavernMuteUI();
-        if (Input.GetKeyDown(KeyCode.P)) ToggleOutsideMuteUI();
+        // Tymczasowy przycisk (np. M) do testowania interakcji z myszką.
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleMenuCursor();
+        }
     }
 
-    // Odwraca stan wyciszenia i ustawia głośność.
-    private void ToggleMute(FMOD.Studio.VCA vca, ref bool muteFlag)
-    {
-        muteFlag = !muteFlag;
-        float volume = muteFlag ? DecibelToLinear(-100f) : DecibelToLinear(0f);
-        vca.setVolume(volume);
-    }
+    // --- METODY DLA SLIDERÓW ---
 
-    // Konwertuje dB na liniową skalę.
-    private float DecibelToLinear(float dB)
+    public void SetGlobalVolume(float volume) => globalVCA.setVolume(volume);
+    public void SetMusicVolume(float volume) => musicVCA.setVolume(volume);
+    public void SetTavernVolume(float volume) => tavernVCA.setVolume(volume);
+    public void SetOutsideVolume(float volume) => outsideVCA.setVolume(volume);
+    public void SetSFXVolume(float volume) => sfxVCA.setVolume(volume);
+
+    // --- ZARZĄDZANIE KURSOREM ---
+
+    // Przełącza widoczność kursora, aby móc klikać suwaki.
+    private void ToggleMenuCursor()
     {
-        return Mathf.Pow(10.0f, dB / 20f);
+        isMenuOpen = !isMenuOpen;
+
+        if (isMenuOpen)
+        {
+            // Pokaż i odblokuj kursor.
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            // Ukryj i zablokuj kursor (powrót do gry).
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 }

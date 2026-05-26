@@ -1,108 +1,97 @@
 using FMODUnity;
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
-// Interfejs IInteractable pozwala innym skryptom na wywoływanie metody Interact().
+// Zarządza drzwiami i dźwiękiem FMOD.
 public class Doors : MonoBehaviour, IInteractable
 {
-    // Czas trwania animacji otwierania/zamykania drzwi.
+    // Czas obrotu drzwi.
     public float rotationDuration = 1f;
 
-    // Prywatne pola z atrybutem SerializedField do edycji w Inspektorze.
-    [SerializeField]
-    private bool doorsOpened = true;
-    [SerializeField]
-    private bool isRotating = false;
+    [SerializeField] private bool doorsOpened = true;
+    [SerializeField] private bool isRotating = false;
 
-    // FMOD - Dźwięk drzwi.
+    // FMOD - Referencje.
     private FMOD.Studio.EventInstance doorsSoundInstance;
     public EventReference doorsEvent;
-    
-    // FMOD - Snapshot do wnętrza pokoju.
+
     private FMOD.Studio.EventInstance insideRoomSnapshot;
     public EventReference insideRoomSnap;
 
-    /// <summary>
-    /// Główna metoda interakcji, wywoływana z zewnątrz (np. przez skrypt gracza).
-    /// </summary>
+    // Główna interakcja z drzwiami.
     public void Interact()
     {
-        if (!isRotating)
-        {
-            // Przełącza stan drzwi (otwarte/zamknięte) i uruchamia odpowiednie akcje.
-            doorsOpened = !doorsOpened;
-            StartCoroutine(RotateDoors(doorsOpened ? -65 : 65));
-            PlaySound();
-            RoomsSnap();
-        }
+        if (isRotating) return;
+
+        doorsOpened = !doorsOpened;
+
+        // Zawsze graj skrzypienie przy starcie ruchu.
+        PlaySound("Open");
+
+        StartCoroutine(RotateDoors(doorsOpened ? -65 : 65));
+        RoomsSnap();
     }
 
-    /// <summary>
-    /// Korutyna do animowania obrotu drzwi w czasie.
-    /// </summary>
-    /// <param name="targetAngle">Docelowy kąt obrotu (w stopniach) wokół osi Y.</param>
+    // Korutyna obrotu drzwi.
     private IEnumerator RotateDoors(float targetAngle)
     {
         isRotating = true;
         float elapsedTime = 0f;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = startRotation * Quaternion.Euler(0, targetAngle, 0);
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = startRot * Quaternion.Euler(0, targetAngle, 0);
 
         while (elapsedTime < rotationDuration)
         {
-            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, elapsedTime / rotationDuration);
+            transform.rotation = Quaternion.Lerp(startRot, targetRot, elapsedTime / rotationDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Zapewnia, że drzwi są idealnie obrócone na koniec animacji.
-        transform.rotation = targetRotation;
+        // Wyrównaj po zakończeniu ruchu.
+        transform.rotation = targetRot;
         isRotating = false;
+
+        // Graj trzaśnięcie tylko po zamknięciu.
+        if (!doorsOpened)
+        {
+            PlaySound("Close");
+        }
     }
 
-    /// <summary>
-    /// Odtwarza dźwięk otwierania lub zamykania drzwi.
-    /// </summary>
-    private void PlaySound()
+    // Konfiguracja i start dźwięku FMOD z wybraną etykietą.
+    private void PlaySound(string parameterLabel)
     {
-        // Sprawdza, czy instancja dźwięku już istnieje, a następnie ją zwalnia.
         if (doorsSoundInstance.isValid())
         {
+            // Wycisz poprzedni dźwięk płynnie.
+            doorsSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
             doorsSoundInstance.release();
         }
-        
+
         doorsSoundInstance = RuntimeManager.CreateInstance(doorsEvent);
         doorsSoundInstance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject.transform));
-        
-        // Ustawia parametr "Doors" w zależności od stanu drzwi.
-        string parameterLabel = doorsOpened ? "Open" : "Close";
+
+        // Przekaż etykietę "Open" lub "Close".
         doorsSoundInstance.setParameterByNameWithLabel("Doors", parameterLabel);
-        
         doorsSoundInstance.start();
     }
 
-    /// <summary>
-    /// Aktywuje lub dezaktywuje snapshot dźwiękowy pokoju.
-    /// </summary>
+    // Obsługa snapshotu.
     private void RoomsSnap()
     {
         RoomAmbient roomAmbient = FindObjectOfType<RoomAmbient>();
+        if (roomAmbient == null || !roomAmbient.ambientActivated) return;
 
-        // Logika włączania i wyłączania snapshotu.
-        if (roomAmbient.ambientActivated && doorsOpened)
+        if (doorsOpened)
         {
-            // Dezaktywuje snapshot.
             if (insideRoomSnapshot.isValid())
             {
                 insideRoomSnapshot.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
                 insideRoomSnapshot.release();
             }
         }
-        else if (roomAmbient.ambientActivated && !doorsOpened)
+        else
         {
-            // Aktywuje snapshot.
             insideRoomSnapshot = RuntimeManager.CreateInstance(insideRoomSnap);
             insideRoomSnapshot.start();
         }
