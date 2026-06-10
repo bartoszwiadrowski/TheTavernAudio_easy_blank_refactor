@@ -524,10 +524,10 @@ MonoBehaviour:
   m_Name: FMODStudioSettings
   m_EditorClassIdentifier: 
   switchSettingsMigration: 1
-  HasSourceProject: 0
-  HasPlatforms: 0
-  sourceProjectPath: FMOD Studio/Tavern/Tavern.fspro
-  sourceBankPath: ../../../Desktop/Audiooo/AUDIODZISdxd-20260428T145052Z-3-001/AUDIODZISdxd/fmod/Build/Desktop
+  HasSourceProject: 1
+  HasPlatforms: 1
+  sourceProjectPath: ../../../koxko/Documents/fmodTavern123/fmodTavern123.fspro
+  sourceBankPath: ../../../koxko/Documents/fmodTavern123/Build
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 1
   ShowBankRefreshWindow: 1

@@ -1,20 +1,23 @@
 using UnityEngine;
 using FMODUnity;
 
-// Zarządza snapshotem 'Outside' na podstawie tagu podłoża.
+// Przełącza snapshoty między zewnątrz a wewnątrz.
 public class Outside_foot_switch : MonoBehaviour
 {
-    [SerializeField]
-    private bool snapshotActivated = false;
-
-    private float distToGround;
-
-    private FMOD.Studio.EventInstance outsideSnapshotInstance;
+    [Header("Snapshoty")]
     public EventReference outsideSnapshot;
+    public EventReference insideSnapshot;
+
+    private FMOD.Studio.EventInstance outsideInstance;
+    private FMOD.Studio.EventInstance insideInstance;
+
+    // Aktualna strefa, zapobiega spamowaniu eventów.
+    private string currentZone = "None"; 
+    private float distToGround;
 
     void Start()
     {
-        // Pobierz odległość do podłoża.
+        // Pobierz odległość do podłogi.
         distToGround = GetComponent<Collider>().bounds.extents.y;
     }
 
@@ -32,37 +35,45 @@ public class Outside_foot_switch : MonoBehaviour
         {
             string tag = hit.collider.tag;
 
-            // Włącz snapshot (Na zewnątrz).
-            if (tag == "Outside" && !snapshotActivated)
+            // Gracz wychodzi na zewnątrz.
+            if (tag == "Outside" && currentZone != "Outside")
             {
-                ToggleSnapshot(true);
+                currentZone = "Outside";
+                
+                // Wyłącz wnętrze, włącz zewnątrz.
+                StopSnapshot(ref insideInstance);
+                PlaySnapshot(ref outsideInstance, outsideSnapshot);
             }
-            // Wyłącz snapshot (Wewnątrz).
-            else if ((tag == "Inside_stone" || tag == "Inside_wood") && snapshotActivated)
+            // Gracz wchodzi do środka.
+            else if ((tag == "Inside_stone" || tag == "Inside_wood") && currentZone != "Inside")
             {
-                ToggleSnapshot(false);
+                currentZone = "Inside";
+                
+                // Wyłącz zewnątrz, włącz wnętrze.
+                StopSnapshot(ref outsideInstance);
+                PlaySnapshot(ref insideInstance, insideSnapshot);
             }
         }
     }
 
-    private void ToggleSnapshot(bool activate)
+    // Włącza wybrany snapshot.
+    private void PlaySnapshot(ref FMOD.Studio.EventInstance instance, EventReference snapshotRef)
     {
-        if (activate)
+        if (!snapshotRef.IsNull)
         {
-            // Uruchom instancję.
-            outsideSnapshotInstance = FMODUnity.RuntimeManager.CreateInstance(outsideSnapshot);
-            outsideSnapshotInstance.start();
+            instance = RuntimeManager.CreateInstance(snapshotRef);
+            instance.start();
         }
-        else
-        {
-            if (outsideSnapshotInstance.isValid())
-            {
-                // Pozwól na płynne wyciszenie (wymaga AHDSR w FMOD).
-                outsideSnapshotInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-                outsideSnapshotInstance.release();
-            }
-        }
+    }
 
-        snapshotActivated = activate;
+    // Wyłącza snapshot z płynnym przejściem.
+    private void StopSnapshot(ref FMOD.Studio.EventInstance instance)
+    {
+        if (instance.isValid())
+        {
+            // Płynne wyciszenie (dzięki AHDSR w FMOD).
+            instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            instance.release();
+        }
     }
 }
