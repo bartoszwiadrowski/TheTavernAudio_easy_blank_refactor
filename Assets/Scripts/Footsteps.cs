@@ -1,7 +1,7 @@
 using UnityEngine;
 using FMODUnity;
 
-// Zarządza krokami, skokami i lądowaniem
+// Obsługa kroków, skoków i lądowań
 public class Footsteps : MonoBehaviour
 {
     [Header("Eventy FMOD")]
@@ -14,34 +14,55 @@ public class Footsteps : MonoBehaviour
 
     [SerializeField] private bool isGrounded = true;
     [SerializeField] private bool isJumping = false;
+    
+    // Czas skoku (blokada fałszywych lądowań)
+    private float jumpTime = 0f; 
 
     void Start()
     {
-        // Pobierz odległość do ziemi
+        // Dystans do ziemi
         distToGround = GetComponent<Collider>().bounds.extents.y;
     }
 
     void Update()
     {
-        // Skok na spację
-        if (Input.GetKeyDown(KeyCode.Space))
+        bool currentlyGrounded = IsGrounded();
+
+        // Lądowanie
+        if (!isGrounded && currentlyGrounded)
+        {
+            // Ignoruj kolizje tuż po wybiciu (0.2s)
+            if (isJumping && Time.time > jumpTime + 0.2f)
+            {
+                PlayLanding();
+                isJumping = false; 
+            }
+            isGrounded = true; 
+        }
+        // Spadanie bez skoku
+        else if (isGrounded && !currentlyGrounded)
+        {
+            isGrounded = false;
+        }
+
+        // Skok
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             PlayJump();
         }
 
-        // Obsługa kroków
+        // Kroki
         HandleFootsteps();
     }
 
-    // Liczy czas między krokami
     private void HandleFootsteps()
     {
         bool isMoving = (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0);
         bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
-        if (isMoving && IsGrounded())
+        // Graj kroki tylko na ziemi
+        if (isMoving && isGrounded && !isJumping)
         {
-            // Szybsze kroki podczas biegu
             float footstepInterval = isRunning ? 0.25f : 0.5f;
 
             if (Time.time - lastFootstepTime > footstepInterval)
@@ -52,60 +73,40 @@ public class Footsteps : MonoBehaviour
         }
     }
 
-    // Strzela promieniem i gra krok
     private void PlayFootsteps()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, distToGround + 0.5f))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, distToGround + 0.2f))
         {
             PlaySurfaceSound(footstepsEvent, hit.collider.tag, "Switch");
         }
     }
 
-    // Obsługa skoku
     private void PlayJump()
     {
-        if (IsGrounded())
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, distToGround + 0.2f))
         {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, distToGround + 0.5f))
-            {
-                PlaySurfaceSound(jumpEvent, hit.collider.tag, "Jump_switch");
-            }
-
-            // Zmień stan na lot
-            isGrounded = false;
-            isJumping = true;
+            PlaySurfaceSound(jumpEvent, hit.collider.tag, "Jump_switch");
         }
+
+        // Ustaw status lotu
+        isGrounded = false;
+        isJumping = true;
+        jumpTime = Time.time; 
     }
 
-    // Kolizja po skoku (w momencie uderzenia w ziemię)
-    private void OnCollisionEnter(Collision col)
-    {
-        if (!isGrounded && isJumping)
-        {
-            // Natychmiast zmień stan, aby zablokować podwójny dźwięk
-            isGrounded = true;
-            isJumping = false;
-
-            PlayLanding();
-        }
-    }
-
-    // Odtwarza lądowanie
     private void PlayLanding()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, distToGround + 0.5f))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, distToGround + 0.2f))
         {
             PlaySurfaceSound(landEvent, hit.collider.tag, "Land_Switch");
         }
     }
 
-    // FMOD: Tworzy i odtwarza dźwięk z odpowiednim parametrem
     private void PlaySurfaceSound(EventReference eventRef, string surfaceTag, string paramName)
     {
-        // Domyślna etykieta to Stone
         string surfaceLabel = "Stone";
 
-        // Rozpoznawanie tagów podłoża
+        // Rozpoznaj tag podłoża
         switch (surfaceTag)
         {
             case "Wood":
@@ -118,19 +119,21 @@ public class Footsteps : MonoBehaviour
             case "Chandelier":
                 surfaceLabel = "Chandelier";
                 break;
+            case "Bed": // Dodany tag łóżka
+                surfaceLabel = "Bed";
+                break;
             default:
-                // Pozostałe tagi (np. Stone, Outside) użyją domyślnego Stone
                 surfaceLabel = "Stone";
                 break;
         }
 
-        // Bramka dla skoku: jeśli to wyskok i podłoże nie jest drewnem, wymuś Stone
-        if (paramName == "Jump_switch" && surfaceLabel != "Wood")
+        // Bramka wyskoku: Domyślnie kamień, chyba że drewno lub łóżko
+        if (paramName == "Jump_switch" && surfaceLabel != "Wood" && surfaceLabel != "Bed")
         {
             surfaceLabel = "Stone";
         }
 
-        // Graj i zapomnij
+        // Odpal FMOD
         var soundInstance = RuntimeManager.CreateInstance(eventRef);
         soundInstance.set3DAttributes(RuntimeUtils.To3DAttributes(gameObject.transform));
         soundInstance.setParameterByNameWithLabel(paramName, surfaceLabel);
@@ -140,9 +143,9 @@ public class Footsteps : MonoBehaviour
         Debug.Log($"Puszczam dźwięk: {paramName} na podłożu: {surfaceLabel}");
     }
 
-    // Sprawdza czy gracz dotyka ziemi promieniem
     private bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, distToGround + 0.5f);
+        // Promień 0.2f do wykrycia ziemi
+        return Physics.Raycast(transform.position, Vector3.down, distToGround + 0.2f);
     }
 }

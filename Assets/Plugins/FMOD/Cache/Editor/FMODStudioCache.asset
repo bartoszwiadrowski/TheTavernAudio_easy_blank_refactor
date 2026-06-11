@@ -444,10 +444,10 @@ MonoBehaviour:
   Path: ../../../koxko/Documents/fmodTavern123/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639167898765150990
+  lastModified: 639168223134403054
   FileSizes:
   - Name: Desktop
-    Value: 7126912
+    Value: 7287904
   Exists: 1
 --- !u!114 &-669157323663420351
 MonoBehaviour:
@@ -464,7 +464,7 @@ MonoBehaviour:
   Name: Switch
   StudioPath: 
   Min: 0
-  Max: 2
+  Max: 3
   Default: 0
   ID:
     data1: 209654300
@@ -475,6 +475,7 @@ MonoBehaviour:
   - Stone
   - Wood
   - Stairs
+  - Bed
   Exists: 1
 --- !u!114 &-628963993943184184
 MonoBehaviour:
@@ -582,7 +583,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: 1992350053165747005}
   cacheVersion: 131859
-  cacheTime: 639167898765166476
+  cacheTime: 639168223134418674
   SerializableEventsDict:
   - key: event:/amb_Music
     index: 0
@@ -718,7 +719,7 @@ MonoBehaviour:
   IsOneShot: 1
   Parameters: []
   MinDistance: 0.5
-  MaxDistance: 7
+  MaxDistance: 6
   Length: 0
 --- !u!114 &1992350053165747005
 MonoBehaviour:
@@ -735,7 +736,7 @@ MonoBehaviour:
   Path: ../../../koxko/Documents/fmodTavern123/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639167898765166476
+  lastModified: 639168223134418674
   FileSizes:
   - Name: Desktop
     Value: 1962
@@ -1089,7 +1090,7 @@ MonoBehaviour:
   Name: Land_Switch
   StudioPath: 
   Min: 0
-  Max: 3
+  Max: 4
   Default: 0
   ID:
     data1: 3113870922
@@ -1101,6 +1102,7 @@ MonoBehaviour:
   - Wood
   - Stairs
   - Chandelier
+  - Bed
   Exists: 1
 --- !u!114 &5901798223482728331
 MonoBehaviour:
